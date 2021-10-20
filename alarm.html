@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Online Alarm - TIMEKEEPER</title>
+        <style>
+            html {
+                height: -webkit-fill-available;
+            }
+            
+            body {
+                background: url(pics/pixel-city-bg.jpg) no-repeat center fixed;
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                background-size: cover;
+                -o-background-size: cover;
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+                min-width: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            #clock{
+                height: fit-content;   
+                text-align: center;
+                align-items: center;
+                padding: 0 30px;
+                box-shadow: -3px -3px 7px rgba(255,255,255,0.05),
+                            3px 3px 5px rgba(0,0,0,0.5);
+                width: fit-content;
+                display: block;
+                margin: auto;
+            }
+
+            #clock .display, #clock .date {
+                font-size: 80px;
+                color: rgb(255, 251, 251);
+                letter-spacing: 5px;
+                font-family: 'Noto Sans Mono', monospace;
+                padding: 10px;
+            }
+
+            .button-holder{
+                text-align:center;
+                padding-bottom:20px;
+            }
+            
+            a.button{
+                background-color:#f6a7b3;
+                background-image:-webkit-linear-gradient(top, #f6a7b3, #f0a3af);
+                background-image:-moz-linear-gradient(top, #f6a7b3, #f0a3af);
+                background-image:linear-gradient(top, #f6a7b3, #f0a3af);
+
+                border:1px solid #eb9ba7;
+                border-radius:2px;
+
+                box-shadow:0 2px 2px #ccc;
+
+                color:rgb(22, 22, 22);
+                text-decoration: none !important;
+                padding:15px 20px;
+                display:inline-block;
+                cursor:pointer;
+
+                position:relative;
+                z-index: 1;
+            }
+
+            a.button:hover{
+                opacity:0.9;
+            }
+
+            .alarm-button{
+                width: 45px;
+                height: 45px;
+                vertical-align: middle;
+                display: inline-block;
+                background: url('https://api.iconify.design/carbon/alarm-add.svg?color=white&width=45&height=45');
+                position: relative;
+                cursor: pointer;
+            }
+
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                display: none;
+            }
+
+            .overlay{
+                display:none;
+                position: absolute;
+                width:100%;
+                height:100%;
+                top:0;
+                left:0;
+                background-color:rgba(0,0,0,0.2);
+                z-index:10;
+            }
+
+            #alarm-dialog, #time-is-up{
+                width:500px;
+                height:375px;
+                background-color: #ffdbdb;
+                border-radius:2px;
+                box-shadow: 0 0 8px rgba(0,0,0,0.2);
+                top:200px;
+                left:50%;
+                margin-left:-250px;
+                text-align:center;
+                position: absolute;
+            }
+
+            #alarm-dialog h2{
+                text-transform: uppercase;
+                font-size:18px;
+                color:#5e6268;
+                padding: 50px 0;
+            }
+
+            #alarm-dialog label{
+                text-transform: uppercase;
+                background-color: #e2e2e2;
+                width: 80px;
+                height: 85px;
+                font-size: 11px;
+                display: inline-block;
+                padding: 10px;
+                margin: 4px;
+            }
+
+            #alarm-dialog label input{
+                display: block;
+                border: 0;
+                font: inherit;
+                font-size: 17px;
+                padding: 6px;
+                outline: none;
+                text-align: center;
+                width: 59px;
+                margin: 10px auto;
+                background-color:#fff;
+            }
+
+            #alarm-dialog .button-holder{
+                padding-top: 50px;
+                padding-bottom:0;
+            }
+
+            #alarm-dialog .button-holder .button{
+                box-shadow:0 2px 2px #eee;
+                padding:13px 22px;
+                margin:3px;
+            }
+
+            .button.blue{
+                background-color:#82cddd;
+                background-image:-webkit-linear-gradient(top, #86d3e4, #82cddd);
+                background-image:-moz-linear-gradient(top, #86d3e4, #82cddd);
+                background-image:linear-gradient(top, #86d3e4, #82cddd);
+                border-color:#72c1d2;
+            }
+
+            #alarm-dialog .close{
+                width: 36px;
+                height: 36px;
+                background: url('pics/close.png');
+                position: absolute;
+                top: -18px;
+                right: -18px;
+                cursor:pointer;
+            }
+
+            #time-is-up{
+                height: 240px;
+            }
+
+            #time-is-up h2{
+                padding: 60px 0 40px;
+                font-size: 30px;
+            }
+
+            #time-is-up .button{
+                padding: 12px 20px;
+                box-shadow: 0 2px 2px #eee;
+            }
+        </style>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@500&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous">
+        </script>
+    
+    </head>
+    <body onload="initClock()">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top shadow">
+            <div class="container">
+                    <a class="navbar-brand" href="index.html">TIMEKEEPER</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="true" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                <div class="navbar-collapse collapse " id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Clock</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="alarm.html">Alarm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="stopwatch.html">Stopwatch</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <main>
+            <!-- DISPLAY + ALARM -->
+            <div id="clock" class="bg-dark">
+                <div class="display"></div>
+                <div class="date" style="font-size: 25px; padding-bottom: 25px;">
+                    <span id="dayname">Day</span>,
+                    <span id="month">Month</span>
+                    <span id="daynum">00</span>,
+                    <span id="year">Year</span>
+                </div>
+                <div class="button-holder">
+                    <a class="alarm-button"></a>
+                </div>
+            </div>
+        </main>
+
+                    <!-- MODALS/POP-UP -->
+                    <div class="overlay">
+                        <div id="alarm-dialog">
+                            <h2>Set alarm after</h2>
+                            <label class="hours">
+                                Hours
+                                <input type="number" value="0" min="0" />
+                            </label>
+                            <label class="minutes">
+                                Minutes
+                                <input type="number" value="0" min="0" />
+                            </label>
+                            <label class="seconds">
+                                Seconds
+                                <input type="number" value="0" min="0" />
+                            </label>
+                            <div class="button-holder">
+                                <a id="alarm-set" class="button blue" style="text-decoration: none;">Set</a>
+                                <a id="alarm-clear" class="button red" style="text-decoration: none;">Clear</a>
+                            </div>
+                            <a class="close"></a>
+                        </div>
+                    </div>
+                    <div class="overlay">
+                        <div id="time-is-up">
+                            <h2>Time's up!</h2>
+                            <div class="button-holder">
+                                <a class="button blue">Close</a>
+                            </div>
+                        </div>
+                    </div>
+                    <audio id="alarm-ring" preload>
+                        <source src="audio/ticktac.mp3" type="audio/mpeg" />
+                        <source src="audio/ticktac.ogg" type="audio/ogg" />
+                    </audio>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+        <script src="alarm.js"></script>
+    </body>
+</html> 
